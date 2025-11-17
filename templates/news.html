@@ -1,0 +1,58 @@
+{% extends 'flatpages/default.html' %}
+
+{% load custom_filters %}
+{% load custom_tags %}
+
+{% block title %}
+    {% if request.path == '/news/' %}Новости
+    {% else %}Статьи
+    {% endif %}
+{% endblock title %}
+
+{% block content %}
+    {% if request.path == '/news/' %}
+        <h1>Все новости</h1>
+    {% else %}
+        <h1>Все статьи</h1>
+    {% endif %}
+
+    <h3>{% current_time '%d.%m.%Y' %}</h3>
+
+    <hr>
+
+    {% if posts %}
+        <p>Всего: {{ posts|length }}</p>
+        <table>
+            <tr>
+                <td>Заголовок</td>
+                <td>Дата</td>
+                <td>Текст</td>
+                <td>Автор</td>
+                <td>Рейтинг</td>
+            </tr>
+
+            {% for post in posts %}
+            <tr>
+                <td>
+                    {% if request.path == '/news/' %}
+                        <a href="/news/{{ post.id }}/">
+                            {{ post.title|censor }}
+                        </a>
+                    {% else %}
+                        <a href="/articles/{{ post.id }}/">
+                            {{ post.title|censor }}
+                        </a>
+                    {% endif %}
+                </td>
+                <td>{{ post.created_at|date:'d.m.Y' }}</td>
+                <td>{{ post.content|censor|truncatewords:20 }}</td>
+                <td>{{ post.author.user.username }}</td>
+                <td>{{ post.rating }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+
+    {% else %}
+        <h2>Публикаций нет!</h2>
+    {% endif %}
+{% endblock content %}
